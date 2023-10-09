@@ -28,7 +28,11 @@
   line-height: 34px;
   color: #A0A0A0;
   border: 0;
-  outline: 0;
+  
+}
+
+.search__field:focus {
+  outline: 1px solid #A0A0A0;
 }
 
 .search__button {
