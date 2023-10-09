@@ -11,8 +11,8 @@ const Footer = () => {
       <div className="footer__info">
         <p className="footer__year">© 2023</p>
         <nav className="footer__links">
-          <a href="https://practicum.yandex.ru/" className="footer__link">Яндекс.Практикум</a>
-          <a href="https://github.com/Malaxov16/movies-explorer-frontend" className="footer__link">Github</a>
+          <a href="https://practicum.yandex.ru/" className="footer__link" target='_blank' rel='noreferrer'>Яндекс.Практикум</a>
+          <a href="https://github.com/Malaxov16/movies-explorer-frontend" className="footer__link" target='_blank' rel='noreferrer'>Github</a>
         </nav>
       </div>
     </footer>
