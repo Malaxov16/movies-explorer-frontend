@@ -28,7 +28,7 @@ const Profile = ( {name}) => {
   }, [])
 
   return(
-    <section className="profile">
+    <main className="profile">
       <div className='profile__component'>
         <h1 className="profile__title">Привет, Виктор!</h1>
         <form className="profile__form" onSubmit={hendlerSaveProfile}>
@@ -50,7 +50,7 @@ const Profile = ( {name}) => {
           </>
         )}
       </div>
-    </section>
+    </main>
   )
 };
 

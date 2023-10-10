@@ -7,7 +7,6 @@ import AccountButton from '../AccountButton/AccountButtom';
 import MenuPopup from '../MenuPopup/MenuPopup';
 
 import './Navigation.css';
-import profileIcon from '../../images/profile.png'
 
 function Navigation ({isLoggedIn}) {
   
@@ -35,7 +34,7 @@ function Navigation ({isLoggedIn}) {
             <div className='navigation navigation_visible_hide'>
               <AccountButton />
             </div>
-            <button type='button' className={`navigation__menu-button ${location.pathname === '/'? 'navigation__menu-button_home-page' : ''}`} onClick={openMenuPopup}/>
+            <button type='button' className={`menu-button ${location.pathname === '/'? 'menu-button_home-page' : ''}`} onClick={openMenuPopup}/>
           </>
         ) : (
           <div className='navigation'>

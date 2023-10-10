@@ -11,7 +11,7 @@ import './Header.css';
 function Header({isLoggedIn}){
   const location = useLocation();
   return(
-    <header className={`header ${location.pathname === "/" ? "header__home-page" : ""}`}>
+    <header className={`header ${location.pathname === "/" ? "header_home-page" : ""}`}>
       <Logo />
       <Navigation isLoggedIn={isLoggedIn} />
     </header>

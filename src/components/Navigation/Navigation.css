@@ -61,13 +61,13 @@
   opacity: 0.8;
 }
 
-.navigation__menu-button {
+.menu-button {
   display: none;
   margin: 0;
   padding: 0;
   width: 44px;
   height: 44px;
-  background-image: url('../../images/menu-button.png');
+  background-image: url('../../images/menu-button.svg');
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -77,8 +77,8 @@
   transition: 0.5s ease;
 }
 
-.navigation__menu-button_home-page {
-  background-image: url('../../images/menu-button-home.png');
+.menu-button_home-page {
+  background-image: url('../../images/menu-button-home.svg');
 }
 
 
@@ -88,11 +88,11 @@
     display: none;
   }
 
-  .navigation__menu-button {
+  .menu-button {
     display: flex;
   }
 
-  .navigation__menu-button:hover {
+  .menu-button:hover {
     opacity: 0.8;
   }
 
@@ -112,7 +112,7 @@
     line-height: 26px;
   }
 
-  .navigation__menu-button {
+  .menu-button {
     width: 40px;
     height: 43px;
   }

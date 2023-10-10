@@ -12,7 +12,7 @@ const Login = () => {
   };
 
   return(
-    <section className="login">
+    <main className="login">
       <div className='login__component'>
         <Logo />
         <h1 className="login__title">Рады видеть!</h1>
@@ -29,7 +29,7 @@ const Login = () => {
           <Link to="/signup" className="login__footer-link">Регистрация</Link>
         </div>
       </div>
-    </section>
+    </main>
   )
 }
 

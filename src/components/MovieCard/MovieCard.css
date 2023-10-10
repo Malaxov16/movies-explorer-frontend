@@ -56,19 +56,11 @@
 }
 
 .card__button_delete {
-  background-image: url('../../images/delete-button.png');
+  background-image: url('../../images/delete-button.svg');
 }
 
 .card__button:hover {
   opacity: 0.8;
-}
-
-.card__save_active {
-  background-image: url('../../images/save1d.svg');
-}
-
-.card__save_active:hover {
-  opacity: 1;
 }
 
 .card__duration {

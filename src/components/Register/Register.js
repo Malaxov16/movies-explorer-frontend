@@ -12,7 +12,7 @@ const Register = () => {
   };
 
   return(
-    <section className="register">
+    <main className="register">
       <div className='register__component'>
         <Logo />
         <h1 className="register__title">Добро пожаловать!</h1>
@@ -31,7 +31,7 @@ const Register = () => {
           <Link to="/signin" className="register__footer-link">Войти</Link>
         </div>
       </div>
-    </section>
+    </main>
   )
 }
 

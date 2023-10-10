@@ -27,12 +27,12 @@ const SavedMovies = ({ movies }) => {
   // })
 
   return(
-    <section className="saved-movies">
+    <main className="saved-movies">
       <SearchForm />
       
       {isLoading ? <Preloader /> : <MoviesCardList moviesArray={movies} isMoviesPage={false} /> }
       <MoreButton />
-    </section>
+    </main>
   )
 }
 

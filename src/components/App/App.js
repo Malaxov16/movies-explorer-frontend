@@ -61,7 +61,7 @@ function App() {
           <Route path='/saved-movies' element={<Header isLoggedIn={loggedIn} />} />
         </Routes>
         <Routes>
-          <Route element={loggedIn ? <Navigate to='/' replace='true' /> : <Navigate to='/signin' replace='true' />} />
+            <Route element={loggedIn ? <Navigate to='/' replace='true' /> : <Navigate to='/signin' replace='true' />} />
             <Route path='/signin' element={<Login handleLogin={handleLogin} />} />
             <Route path='/signup' element={<Register handleRegister={handleRegister} />} />
             <Route path='/' element={<Main isLoggedIn={loggedIn} />} />

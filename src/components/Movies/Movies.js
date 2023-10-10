@@ -28,11 +28,11 @@ const Movies = ({ movies }) => {
   // }, [])
 
   return(
-    <section className="movies">
+    <main className="movies">
       <SearchForm />
       {isLoading ? <Preloader /> : <MoviesCardList moviesArray={movies} isMoviesPage={true}/> }
       <MoreButton />
-    </section>
+    </main>
   )
 }
 
