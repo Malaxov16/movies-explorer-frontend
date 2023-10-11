@@ -1,0 +1,110 @@
+.popup {
+  margin: 0;
+  padding: 20px 20px 90px;
+  box-sizing: border-box;
+  width: 70%;
+  height: 100vh;
+  display: none;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  position: fixed;
+  z-index: 1;
+  right: -520px;
+  top: 0;
+  background-color: rgba(255, 255, 255, 1);
+  visibility: hidden;
+  transition: transform 1s ease;
+}
+
+.popup_opened {
+  display: flex;
+  visibility: visible;
+  transform: translatex(-520px);
+  transition: transform 3s ease;
+}
+
+.popup__close-button {
+  margin: 0;
+  padding: 0;
+  width: 28px;
+  height: 28px;
+  align-self: flex-end;
+  background-image: url('../../images/close-button.svg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: unset;
+  cursor: pointer;
+  border: 0;
+  transition: 0.5s ease;
+}
+
+.popup__close-button:hover {
+  opacity: 0.8;
+}
+
+.popup__list {
+  margin: 105px 0 0;
+  padding: 0;
+  list-style-type: none;
+}
+
+.popup__item {
+  margin: 0 0 22px;
+  padding: 0;
+  height: 28px;
+  text-align: center;
+}
+
+.popup__item .popup__link.active {
+  border-bottom: 2px solid #000;
+}
+
+.popup__link {
+  padding: 0 0 4px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 500;
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.popup__link:hover {
+  opacity: 0.7;
+}
+
+.popup__item:last-of-type {
+  margin-bottom: 0;
+}
+
+.popup__account-button {
+  position: absolute;
+  bottom: 90px;
+}
+
+@media screen and (max-width: 430px) {
+  
+  .popup {
+    padding: 15px 15px 46px;
+    width: 100%;
+  }
+
+  .popup__list {
+    margin-top: 100px;
+  }
+
+  .popup__item {
+    margin-bottom: 15px;
+    height: 31px;
+  }
+
+  .popup__link {
+    padding-bottom: 7px;
+  }
+
+  .popup__account-button {
+    bottom: 46px;
+  }
+}
