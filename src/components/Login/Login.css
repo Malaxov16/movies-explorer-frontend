@@ -32,7 +32,7 @@
 }
 
 .login__field {
-  margin: 0 0 24px;
+  margin: 0 0 6px;
   padding: 0 0 10px;
   width: 100%;
   font-size: 14px;
@@ -45,10 +45,6 @@
   box-sizing: border-box;
 }
 
-.login__field:last-of-type {
-  margin-bottom: 0;
-}
-
 .login__label {
   margin: 0 0 5px;
   padding: 0;
@@ -58,15 +54,20 @@
   text-align: left;
 }
 
-.login__error {
-  margin: 6px 0 0;
+.login__field-error-msg {
+  margin: 0 0 6px;
   padding: 0;
   width: 100%;
+  min-height: 12px;
   font-size: 10px;
   font-weight: 400;
   line-height: 12px;
-  color: rgba(255, 0, 76, 1);
   text-align: left;
+  color: rgba(255, 48, 85, 1);
+}
+
+.login__field-error-msg:last-of-type {
+  margin: 0;
 }
 
 .login__button {
@@ -88,6 +89,15 @@
 
 .login__button:hover {
   background-color: rgba(52, 86, 243, 0.8);
+}
+
+.login__button_disabled {
+  background-color: rgba(143, 143, 143, 1);
+  cursor: not-allowed;
+}
+
+.login__button_disabled:hover {
+  background-color: rgb(143, 143, 143, 1);
 }
 
 .login__footer {
