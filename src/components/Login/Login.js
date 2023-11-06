@@ -1,17 +1,18 @@
 // Login — компонент страницы авторизации
 
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
 
 import Logo from '../Logo/Logo';
 import './Login.css';
 import useFormWithValidation from '../../hooks/useFormWithValidation'
 
-const Login = () => {
+const Login = ({handleLogin}) => {
   const { values, handleChange, errors, isValid, resetForm } = useFormWithValidation();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Авторизация');
+    handleLogin(values.email, values.password);
     resetForm();
   };
 

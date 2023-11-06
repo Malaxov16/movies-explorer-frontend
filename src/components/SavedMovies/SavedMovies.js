@@ -1,6 +1,7 @@
 // Movies — компонент страницы с поиском по фильмам
 
 import { useState, useEffect } from "react"
+import { useLocation } from "react-router-dom";
 
 import './SavedMovies.css';
 
@@ -13,6 +14,8 @@ import Preloader from "../Preloader/Preloader";
 const SavedMovies = ({ movies }) => {
 
   const [isLoading, setIsLoading] = useState(false);
+
+  const location = useLocation();
 
   // useEffect(() => {
   //   setIsLoading(true);

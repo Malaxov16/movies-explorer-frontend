@@ -2,15 +2,15 @@
 
 import './MoreButton.css'
 
-const MoreButton = ({onMoreClick}) => {
+const MoreButton = ({handleMoreButton}) => {
 
-  function hendlerMoreClick() {
-    console.log('Отрисовать дополнительные карточки');
+  function hendleMoreClick() {
+    handleMoreButton();
   };
 
   return(
     <div className="more">
-      <button className="more__button" onClick={hendlerMoreClick}>Еще</button>
+      <button className="more__button" onClick={hendleMoreClick}>Еще</button>
     </div>
   )
 };

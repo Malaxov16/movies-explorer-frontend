@@ -1,6 +1,6 @@
-function convertDuration(durationInSec) {
-   const minutes = Math.floor(durationInSec /60) - Math.floor(durationInSec / 3600) * 60;
-   const hours = Math.floor(durationInSec / 3600);
+function convertDuration(durationInMin) {
+   const minutes = durationInMin - Math.floor(durationInMin / 60) * 60;
+   const hours = Math.floor(durationInMin / 60);
    return (`${hours}ч ${minutes}м`);
 };
 

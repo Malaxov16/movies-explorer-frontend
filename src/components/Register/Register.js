@@ -6,12 +6,12 @@ import Logo from '../Logo/Logo';
 import './Register.css';
 import useFormWithValidation from '../../hooks/useFormWithValidation';
 
-const Register = () => {
+const Register = ({handleRegister}) => {
   const { values, handleChange, errors, isValid, resetForm } = useFormWithValidation();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Регистрация');
+    handleRegister(values.name, values.email, values.password);
     resetForm();
   };
 

@@ -1,6 +1,7 @@
 // MoviesCard — компонент одной карточки фильма
 
 import { mockComponent } from 'react-dom/test-utils';
+import { urlMovies } from '../../utils/consts'
 import './MovieCard.css';
 import convertDuration from '../../utils/utils.js'
 
@@ -17,7 +18,7 @@ const MovieCard = ({movieCard, onCardClick, onCardSave, isMoviesPage, isSavedMov
 
   return (
     <article className="card">
-      <img className="card__image" src={movieCard.image} alt={movieCard.nameRU} onClick={handleCardCLick} />
+      <img className="card__image" src={urlMovies + movieCard.image.url} alt={movieCard.nameRU} onClick={handleCardCLick} />
       <div className="card__about">
         <p className="card__name">{movieCard.nameRU}</p>
         {isSavedMovie ?
