@@ -19,7 +19,7 @@ import {
 } from '../../utils/consts';
 
 
-const Movies = ({ handleQueryMovies, handleSwitchShortMovie, checkShortMovie, movies, isLoading, isError, isNotFound, isExecFind }) => {
+const Movies = ({ handleQueryMovies, handleSwitchShortMovie, handleActionMovie, checkShortMovie, checkSavedMovies, movies, isLoading, isError, isNotFound, isExecFind }) => {
   const windowSize = useResize(); //хук, который возвращает объект с параметрами размера окна
   const [initialCards, setInitialCards] = useState(0); // стейт со значением количества карточке в инициализрующем массиве
   const [addCards, setAddCards] = useState(0); //стейт с количеством карточек, которые добавляются после нажатия на кнопку "Еще"
@@ -41,7 +41,7 @@ const Movies = ({ handleQueryMovies, handleSwitchShortMovie, checkShortMovie, mo
       setInitialCards(INITIAL_CARDS_650);
       setAddCards(ADD_CARDS_650);
     };
-  }, [windowSize.width, movies])
+  }, [windowSize.width])
 
   //функция увеличения значения инициализирующего массива
   function handleMoreButton () {
@@ -56,7 +56,7 @@ const Movies = ({ handleQueryMovies, handleSwitchShortMovie, checkShortMovie, mo
     } else {
       setIsEndMovies(false);
     }
-  }, [initialCards])
+  }, [initialCards, movies])
 
   return(
     <main className="movies">
@@ -73,7 +73,7 @@ const Movies = ({ handleQueryMovies, handleSwitchShortMovie, checkShortMovie, mo
           ?
           <p className="movies__msg">Фильмы не найдены</p>
           :
-          <MoviesCardList moviesArray={initialMovies} isMoviesPage={true}/> }
+          <MoviesCardList handleActionMovie={handleActionMovie} checkSavedMovies={checkSavedMovies} moviesArray={initialMovies} isMoviesPage={true}/> }
           {/* скрываем кнопку если основной массив пустой или достигнут конец осонввного массива */}
       {(isNotFound || isEndMovies) ? '' : <MoreButton handleMoreButton={handleMoreButton} /> } 
     </main>

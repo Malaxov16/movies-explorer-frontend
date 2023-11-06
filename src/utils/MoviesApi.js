@@ -16,6 +16,7 @@ const headers = {
   'content-type': 'application/json'
 };
 
+//функция запроса фильмов с внешнего ресурса
 export const getMoviesMain =() => {
   console.log('Запрос фильмов')
   return request('/beatfilm-movies', {

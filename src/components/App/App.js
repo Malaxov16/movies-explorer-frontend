@@ -14,23 +14,26 @@ import { useEffect, useState } from 'react';
 //import moviesList from '../../utils/consts';
 
 import { CurrentUserContext } from '../../constexts/currentUserContext';
-import { getUser, login, register, updateUser } from '../../utils/MainApi';
+import { getUser, login, register, updateUser, getSavedMoviesAPI, saveMovieAPI, deleteMovieAPI } from '../../utils/MainApi';
 import { getMoviesMain } from '../../utils/MoviesApi';
 
 function App() {
+  //стейт для работы с пользователем
   const [loggedIn, setLoggedIn] = useState(false); //стейт состояния авторизации
   const [currentUser, setCurrentUser] = useState({}) //стейт с данными авторизованного пользователя
 
-
+  //стейты для работы с фильмами с внешенго ресурса
   const [allMovies, setAllMovies] = useState([]); //стейт со всеми фильмами от внешнего сервиса
   const [nameFilterMovies, setNameFilterMovies] = useState([]); //стейт с массивом фильмов отфильтрованных строке запроса
   const [foundMovies, setFoundMovies] = useState([]); //стейт с массивом фильмов отфильтрованных по строке запроса и признаку короткометражный
   const [checkShortMovie, setCheckShortMovie] = useState(false); //стейт переключателя короткометражек
   const [isLoading, setIsLoading] = useState(false); //стейт для отображения прелоадера во время поиска
   const [errorFind, setErrorFind] = useState(false); //стейт ошибки поиска
-  const [notFound, setNotFound] = useState(false);
-  const [execFind, setExecFind] = useState(false);
+  const [notFound, setNotFound] = useState(false); //стейт признак, что фильмы не найдены по заданным условиям поиска
+  const [execFind, setExecFind] = useState(false); //стейт признак выполнения поиска
   
+  //стейты для работы с сохраненными фильмами
+  const [savedMovies, setSavedMovies] = useState([]); //стейт с фильмами пользователя
 
   const navigate = useNavigate();
 
@@ -150,7 +153,7 @@ function App() {
     }
   }
 
-  //проверка на пустой массив
+  //функция проверки на пустой массив
   function checkNotFound (movies) {
     if (movies.length !== 0) {
       setNotFound(false);
@@ -158,22 +161,6 @@ function App() {
       setNotFound(true);
     }
   }
-
-  //функция поиска короткометражных фильмов при изменении чекбокса в уже имеющемся массиве
-  // function handleSwitchShortMovies () {
-  //   console.log(checkShortMovie);
-  //   setCheckShortMovie(!checkShortMovie);
-  //   console.log(checkShortMovie);
-  //   checkNotFound(nameFilterMovies);
-  //   if (checkShortMovie && nameFilterMovies.length !==0) {
-  //     const moviesList = findShortMovies(nameFilterMovies);
-  //     checkNotFound(moviesList);
-  //     setFoundMovies(moviesList);
-  //   } else {
-  //     setFoundMovies(nameFilterMovies);
-  //   }
-  //   localStorage.setItem('checkShortMovie', checkShortMovie);
-  // }
 
   //функция обработчик кнопки "Найти" на форме поиска
   function handleQueryMovies (searchString) {
@@ -194,6 +181,7 @@ function App() {
       .finally(() => setIsLoading(false));
   };
 
+  //проверка и получение данных о фильмах из локального хранилища
   useEffect(() => {
     if (localStorage.getItem('foundMovies')) {
       setExecFind(true);
@@ -202,47 +190,83 @@ function App() {
       if (localStorage.getItem('checkShortMovie') === 'true') {
         setCheckShortMovie(true);
         setFoundMovies(findShortMovies(movieList));
-        console.log('Ветка true')
       } else {
-        console.log(movieList);
         setCheckShortMovie(false);
         setFoundMovies(movieList);
-        console.log('Ветка false')
       }
     }
-    //setCheckShortMovie(Boolean(localStorage.getItem('checkShortMovie')));
   },[])
 
-useEffect(() => {
-  console.log(nameFilterMovies)
-  checkNotFound(nameFilterMovies);
-  if (checkShortMovie) {
-    const moviesList = findShortMovies(nameFilterMovies);
-    checkNotFound(moviesList);
-    setFoundMovies(moviesList);
-  } else {
-    setFoundMovies(nameFilterMovies);
+  //поиск короткометражек при переключении чекбокса
+  useEffect(() => {
+    checkNotFound(nameFilterMovies);
+    if (checkShortMovie) {
+      const moviesList = findShortMovies(nameFilterMovies);
+      checkNotFound(moviesList);
+      setFoundMovies(moviesList);
+    } else {
+      setFoundMovies(nameFilterMovies);
+    }
+  }, [checkShortMovie, nameFilterMovies]);
+
+
+  //---------------------------------- Работа с сохраненными фильмами --------------------------------------
+
+  //получение фильмов пользователя
+  useEffect(() => {
+    getSavedMoviesAPI()
+      .then((res) => {
+        setSavedMovies(res.data);
+      })
+      .catch((err) => console.log('Произошла ошибка при получении сохраненных фильмов')) // вывод ошибки
+  }, [])
+
+  //функция проверки фильма в сохраненных
+  function checkSavedMovies (movie) {
+    return savedMovies.some((item) => item.movieId === movie.id);
   }
-}, [checkShortMovie, nameFilterMovies]);
 
+  //функция сохранения фильма
+  function saveMovie (movie) {
+    saveMovieAPI(movie)
+      .then((res) => setSavedMovies([res, ...savedMovies]))
+      .catch((err) => console.log('Произошла ошибка при сохранении фильма'));
+  };
 
+  //функция удаления фильма
+  function deleteMovie (movieId) {
+    deleteMovieAPI(movieId)
+      .then((res) => 
+      {
+        setSavedMovies(savedMovies.filter((item) => item._id !== movieId))
+      })
+      .catch((err) => console.log('Ошибка удаления фильма'))
+  }
 
 
   function handleCardCLick () {
     console.log('Клик по карточке');
   };
 
-  function handleCardSave() {
-    console.log('Добавить карточку в сохраненные фильмы.');
+  //функция обработчик действия c фильмом
+  function handleActionMovie (movie) {
+    if(!checkSavedMovies(movie)) {
+      saveMovie(movie);
+    } else {
+      const movieId = savedMovies.find((item) => item.movieId === movie.id)._id;
+      deleteMovie(movieId);
+    }
+  };
+
+  //функция обработчик удаления фильма из сохраненных
+  function handleDeleteSavedMovie (movie) {
+    deleteMovie(movie._id);
   }
 
   function handleCardDelete() {
     console.log('Карточка удалена из сохраненных');
   }
 
-  // useEffect(() => {
-  //   setMovies(moviesList)
-  // }, [])
 
   return (
     <CurrentUserContext.Provider value={currentUser}>
@@ -260,8 +284,21 @@ useEffect(() => {
               <Route path='/signup' element={<Register handleRegister={handleRegister} />} />
               <Route path='/' element={<Main isLoggedIn={loggedIn} />} />
               <Route path='/profile' element={<Profile handleUpdateUser={handleUpdateUser} handleOut={signOut} />} />
-              <Route path='/movies' element={<Movies handleQueryMovies={handleQueryMovies} handleSwitchShortMovie={switchShortMovie} checkShortMovie={checkShortMovie} movies={foundMovies} isLoading={isLoading} isErrorFind={errorFind} isNotFound={notFound} isExecFind={execFind} />} />
-              <Route path='/saved-movies' element={<SavedMovies movies={allMovies}/>} />
+              <Route path='/movies' element={
+                <Movies 
+                  handleQueryMovies={handleQueryMovies}
+                  handleSwitchShortMovie={switchShortMovie}
+                  handleActionMovie={handleActionMovie}
+                  checkShortMovie={checkShortMovie}
+                  checkSavedMovies={checkSavedMovies}
+                  movies={foundMovies}
+                  isLoading={isLoading}
+                  isErrorFind={errorFind}
+                  isNotFound={notFound}
+                  isExecFind={execFind}
+                />}
+              />
+              <Route path='/saved-movies' element={<SavedMovies movies={savedMovies} handleDeleteSavedMovie={handleDeleteSavedMovie} />} />
               <Route path='*' element={ <PageNotFound />} />
           </Routes>
           <Routes>

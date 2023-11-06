@@ -1,6 +1,6 @@
 //MainApi - модуль содержит функции ля работы с внутренними API
 
-import { urlBase } from "./consts";
+import { urlBase, urlMovies } from "./consts";
 
 const headers = {
   'content-type': 'application/json'
@@ -73,12 +73,50 @@ export const getUser = (token) => {
 };
 
 //функция получения всех фильмов пользователя
-export const getMovie = () => {
+export const getSavedMoviesAPI = () => {
   const token = getLocalToken();
   return request('/movies', {
     headers: {
       'authorization': `Bearer ${token}`,
-      ...headers
+      ...headers,
     }
+  })
+};
+
+//функция сохранения фильма
+export const saveMovieAPI = (movie) => {
+  const token = getLocalToken();
+  const currentMovie = {
+    movieId: movie.id,
+    country: movie.country,
+    director: movie.director,
+    duration: movie.duration,
+    year: movie.year,
+    description: movie.description,
+    image: `${urlMovies}${movie.image.url}`,
+    trailerLink: movie.trailerLink,
+    thumbnail: `${urlMovies}${movie.image.formats.thumbnail.url}`,
+    nameRU: movie.nameRU,
+    nameEN: movie.nameEN,
+  };
+  return request('/movies', {
+    method: 'POST',
+    headers: {
+      'authorization': `Bearer ${token}`,
+      ...headers,
+    },
+    body: JSON.stringify({...currentMovie})
+  })
+};
+
+//функция удаления фильма
+export const deleteMovieAPI = (movieID) => {
+  const token = getLocalToken();
+  return request(`/movies/${movieID}`, {
+    method: 'DELETE',
+    headers: {
+      'authorization': `Bearer ${token}`,
+      ...headers,
+    },
   })
 };

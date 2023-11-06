@@ -10,11 +10,6 @@ export const useResize = () => {
     const handleResize = (event) => {
       setWidth(event.target.innerWidth);
     };
-
-    const timeoutExecFunc = (func, time) => {
-      setTimeout(() => func, time) 
-    }
-
     window.addEventListener('resize', handleResize);
     return () => {
       window.removeEventListener('resize', handleResize);
