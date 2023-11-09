@@ -77,7 +77,7 @@ function App() {
         if(res.token) {
           localStorage.setItem('token', res.token);
           setLoggedIn(true);
-          navigate('/', {replace: true})
+          navigate('/movies', {replace: true})
           getUser(res.token)
             .then((res) => setCurrentUser(res.data))
             .catch((err) => {
