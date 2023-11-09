@@ -60,7 +60,6 @@ function App() {
       const token = localStorage.getItem('token');
       getUser(token)
         .then((res) => {
-          console.log('Проверка ' + loggedIn)
           setLoggedIn(true);
           setCurrentUser(res.data);
         })
@@ -70,8 +69,6 @@ function App() {
         }) //вывод ошибки
     }
   }, []);
-  
-  console.log(loggedIn)
 
   //функция авторизации
   function handleLogin(email, password) {
@@ -354,7 +351,6 @@ function App() {
             <Route path='/saved-movies' element={<Header isLoggedIn={loggedIn} />} />
           </Routes>
           <Routes>
-          {console.log('Загрузка компонентов. Стейт: ' + loggedIn)}
               <Route element={loggedIn ? <Navigate to='/' replace='true' /> :  <Navigate to='/signin' replace='true' />} />
               <Route path='/signin' element={<Login handleLogin={handleLogin} loggedIn={loggedIn} />} />
               <Route path='/signup' element={<Register handleRegister={handleRegister} loggedIn={loggedIn} />} />

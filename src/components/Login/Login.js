@@ -16,7 +16,6 @@ const Login = ({handleLogin, loggedIn}) => {
       navigate('/', {replace: true});
     }
   })
-  console.log('Загрузка компонента Login. Стейт: ' + loggedIn)
 
   const handleSubmit = (e) => {
     e.preventDefault();
