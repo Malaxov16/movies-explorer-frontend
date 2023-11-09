@@ -1,9 +1,9 @@
 // MoviesCard — компонент одной карточки фильма
 
-import { mockComponent } from 'react-dom/test-utils';
 import { urlMovies } from '../../utils/consts'
 import './MovieCard.css';
 import convertDuration from '../../utils/utils.js'
+import { Link } from 'react-router-dom';
 
 const MovieCard = ({movieCard, handleActionMovie, handleDeleteSavedMovie, checkSavedMovies, onCardClick, onCardSave, isMoviesPage, isSavedMovie, onSaveHandler, onDeleteHendler}) => {
 
@@ -11,13 +11,11 @@ const MovieCard = ({movieCard, handleActionMovie, handleDeleteSavedMovie, checkS
     handleActionMovie(movieCard);
   }
 
-  function handleCardCLick() {
-    console.log('Открыть страницу с трейлером');
-  }
-
   return (
     <article className="card">
-      <img className="card__image" src={isMoviesPage ? urlMovies + movieCard.image.url : movieCard.image} alt={movieCard.nameRU} onClick={handleCardCLick} />
+      <a href={movieCard.trailerLink} target='_blank' rel='noreferrer' className='card__trailer-link'>
+        <img className="card__image" src={isMoviesPage ? urlMovies + movieCard.image.url : movieCard.image} alt={movieCard.nameRU} />
+      </a>
       <div className="card__about">
         <p className="card__name">{movieCard.nameRU}</p>
         {

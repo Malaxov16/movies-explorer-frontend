@@ -23,24 +23,17 @@ const Profile = ( {handleUpdateUser, handleOut}) => {
     e.preventDefault();
     handleUpdateUser(values.name, values.email);
     setIsEdit(false);
+    setValues(currentUser);
   };
 
   function hendlerEditProfile() {
     setIsEdit(true);
   };
 
-  function hendlerSignOut() {
-    console.log('Выйти')
-  };
-
-  // useEffect(() => {
-  //   setIsEdit(false)
-  // }, [])
-
   return(
     <main className="profile">
       <div className='profile__component'>
-        <h1 className="profile__title">Привет, Виктор!</h1>
+        <h1 className="profile__title">Привет, {currentUser.name}!</h1>
         <form className="profile__form" onSubmit={hendleSubmit}>
           <div className='profile__fields'>
             <label className='profile__field-label'>Имя</label>
@@ -52,7 +45,7 @@ const Profile = ( {handleUpdateUser, handleOut}) => {
             <input name="email" id="email" value={values.email || ''} className="profile__field" minLength={2} maxLength={30} pattern='(\w+@\w+\.[A-Za-z]+)' required onChange={handleChange} disabled={!isEdit}/>
           </div>
           <span className='profile__field-error-msg'>{errors.email}</span>
-          <p className='profile__error'>Ошибка</p>
+          <p className='profile__error'></p>
           {isEdit && (<button type='submit' value='Сохранить' className={`profile__save-button ${isBlocked ? 'profile__save-button_disabled' : ''}`} disabled={isBlocked}>Сохранить</button>)}
         </form>
         {!isEdit && (

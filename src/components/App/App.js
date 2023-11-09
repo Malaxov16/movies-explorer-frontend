@@ -8,6 +8,8 @@ import SavedMovies from '../SavedMovies/SavedMovies';
 import Main from '../Main/main';
 import Footer from '../Footer/Footer';
 import PageNotFound from '../PageNotFound/PageNotFound';
+import ProtectedRoute from '../ProtectedRoute/ProtectedRoute';
+import PopupMessage from '../PopupMessage/PopupMessage';
 import { Route, Routes, Navigate, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 
@@ -34,8 +36,16 @@ function App() {
   
   //стейты для работы с сохраненными фильмами
   const [savedMovies, setSavedMovies] = useState([]); //стейт с фильмами пользователя
+  const [nameFilterSavedMovies, setNameFilterSavedMovies] = useState([]); //стейт с массивом сохраненных фильмов отфильтрованных строке запроса
+  const [foundSavedMovies, setFoundSavedMovies] = useState([]); //стейт с отфильрованными фильмами для страницы с сохраненными фильмами
+  const [checkShortSavedMovies, setCheckShorSavedMovies] = useState(false); //стейт переключателя короткометражек на странице с сохраненными фильмами
+  const [execFindSavedMovies, setExecFindSavedMovies] = useState(false); ////стейт признак выполнения поиска сохраненных фильмов
+
+  const [msg, setMessage] = useState({});
 
   const navigate = useNavigate();
+
+
 
   // ------------------------------------------- Функции для работы с пользователем---------------------------
 
@@ -44,23 +54,48 @@ function App() {
     setLoggedIn(true);
   };
 
+  //проверка авторизации пользователя при запуске приложения
+  useEffect(() => {
+    if(localStorage.getItem('token')) {
+      const token = localStorage.getItem('token');
+      getUser(token)
+        .then((res) => {
+          console.log('Проверка ' + loggedIn)
+          setLoggedIn(true);
+          setCurrentUser(res.data);
+        })
+        .catch((err) => {
+          console.log('Ошибка проверки акторизации');
+          setMessage({isOpen: true, textMessage: 'Ошибка проверки акторизации'});
+        }) //вывод ошибки
+    }
+  }, []);
+  
+  console.log(loggedIn)
+
   //функция авторизации
   function handleLogin(email, password) {
     login(email, password)
       .then((res) => {
         if(res.token) {
           localStorage.setItem('token', res.token);
-          setLogin();
+          setLoggedIn(true);
           navigate('/', {replace: true})
           getUser(res.token)
             .then((res) => setCurrentUser(res.data))
-            .catch((err) => console.log('Ошибка получения данных пользователя.')) //вывод ошибки
+            .catch((err) => {
+              console.log('Ошибка получения данных пользователя.');
+              setMessage({isOpen: true, textMessage: 'Ошибка получения данных пользователя'});
+            }) //вывод ошибки
+            
         } else {
           console.log('Ошибка получения токена.') //вывод ошибки
+          setMessage({isOpen: true, textMessage: 'Ошибка получения токена'});
         }
       })
       .catch((res) => {
-        console.log(res); //вывод ошибки
+        console.log('Ошибка авторизации. ПРоверьте имя пользователя и пароль'); //вывод ошибки
+        setMessage({isOpen: true, textMessage: 'Ошибка авторизации. ПРоверьте имя пользователя и пароль'});
       })
   }
 
@@ -72,10 +107,12 @@ function App() {
           handleLogin(email, password);
         } else {
           console.log('Пользователь зарегистрирован, но произошла ошибка'); //вывод ошибки
+          setMessage({isOpen: true, textMessage: 'Пользователь зарегистрирован, но произошла ошибка'});
         };
       })
       .catch((err) => {
         console.log(`Ошибка регистрации: ${err}`); //вывод ошибки
+        setMessage({isOpen: true, textMessage: 'Ошибка регистрации'});
       })
   };
 
@@ -84,9 +121,15 @@ function App() {
     updateUser(name, email)
       .then((res) => {
         setCurrentUser(res.data);
+        setMessage({isOpen: true, textMessage: 'Данные успешно обновлены.'});
       })
       .catch((err) => {
         console.log('Ошибка обновления данных пользователя') //вывод ошибки
+        let textMessage;
+        if (err === 409) {
+          textMessage ='Ошибка. Пользователь с таким email уже существует'
+        } else {textMessage ='Ошибка обновления данных пользователя'}
+        setMessage({isOpen: true, textMessage: textMessage});
       })
   }
 
@@ -100,32 +143,13 @@ function App() {
     navigate('/signin', {replace: true});
   }
 
-  //проверка авторизации пользователя при запуске приложения
-  useEffect(() => {
-    if(localStorage.getItem('token')) {
-      const token = localStorage.getItem('token');
-      getUser(token)
-        .then((res) => {
-          setLogin();
-          navigate('/', {replace: true});
-          setCurrentUser(res.data);
-        })
-        .catch((err) => {console.log(err)}) //вывод ошибки
-    }
-  }, []);
+
 
 
   //------------------------------------функции для работы с поиском фильмов---------------------------------------------
 
-  //функция переключает стейт чекбокса короткометражек
-  function switchShortMovie() {
-    setCheckShortMovie(!checkShortMovie);
-  };
-
   //функция фильтрации по тексту строки поиска
   function findNameMovie(movies, searchString) {
-    console.log( 'Вызов функции findNameMovie ')
-    console.log(movies)
     return movies.filter((movie) =>  
     { 
       return movie.nameRU.toLowerCase().includes(searchString.toLowerCase()) || movie.nameEN.toLowerCase().includes(searchString.toLowerCase());
@@ -137,10 +161,15 @@ function App() {
     return movies.filter((movie) => { return movie.duration <= 40 })
   };
 
+  //------------------------------------- функции для работы на странице Фильмы --------------------------------------------
+
+  //функция переключает стейт чекбокса короткометражек
+  function switchShortMovie() {
+    setCheckShortMovie(!checkShortMovie);
+  };
+
   //функция поиска фильма в массиве по поисковой строке и признаку короткометражный, возвращает массив
   function findMovie(movies, searchString, isCheckShort) {
-    console.log('Вызов функции findMovie ')
-    console.log(movies)
     localStorage.setItem('searchString', searchString);
     localStorage.setItem('checkShortMovie', isCheckShort);
     const moviesList = findNameMovie(movies, searchString);
@@ -167,17 +196,15 @@ function App() {
     setIsLoading(true);
     getMoviesMain()
       .then((res) => {
-        console.log('Фильмы получены')
-        console.log(res);
         setAllMovies(res);
         const movieList = findMovie(res, searchString, checkShortMovie);
-        console.log('Результат поиска: ')
-        console.log(movieList)
         checkNotFound(movieList);
         setFoundMovies(movieList);
         setExecFind(true);
       })
-      .catch((err) => setErrorFind(true)) //вывод ошибки
+      .catch((err) => {
+        setErrorFind(true);
+      }) 
       .finally(() => setIsLoading(false));
   };
 
@@ -195,7 +222,7 @@ function App() {
         setFoundMovies(movieList);
       }
     }
-  },[])
+  },[loggedIn])
 
   //поиск короткометражек при переключении чекбокса
   useEffect(() => {
@@ -209,45 +236,6 @@ function App() {
     }
   }, [checkShortMovie, nameFilterMovies]);
 
-
-  //---------------------------------- Работа с сохраненными фильмами --------------------------------------
-
-  //получение фильмов пользователя
-  useEffect(() => {
-    getSavedMoviesAPI()
-      .then((res) => {
-        setSavedMovies(res.data);
-      })
-      .catch((err) => console.log('Произошла ошибка при получении сохраненных фильмов')) // вывод ошибки
-  }, [])
-
-  //функция проверки фильма в сохраненных
-  function checkSavedMovies (movie) {
-    return savedMovies.some((item) => item.movieId === movie.id);
-  }
-
-  //функция сохранения фильма
-  function saveMovie (movie) {
-    saveMovieAPI(movie)
-      .then((res) => setSavedMovies([res, ...savedMovies]))
-      .catch((err) => console.log('Произошла ошибка при сохранении фильма'));
-  };
-
-  //функция удаления фильма
-  function deleteMovie (movieId) {
-    deleteMovieAPI(movieId)
-      .then((res) => 
-      {
-        setSavedMovies(savedMovies.filter((item) => item._id !== movieId))
-      })
-      .catch((err) => console.log('Ошибка удаления фильма'))
-  }
-
-
-  function handleCardCLick () {
-    console.log('Клик по карточке');
-  };
-
   //функция обработчик действия c фильмом
   function handleActionMovie (movie) {
     if(!checkSavedMovies(movie)) {
@@ -258,15 +246,102 @@ function App() {
     }
   };
 
+  //функция проверки фильма в сохраненных
+  function checkSavedMovies (movie) {
+    return savedMovies.some((item) => item.movieId === movie.id);
+  }
+
+  //функция сохранения фильма
+  function saveMovie (movie) {
+    saveMovieAPI(movie)
+      .then((res) => setSavedMovies([res, ...savedMovies]))
+      .catch((err) => {
+        console.log('Ошибка сохранения фильма');
+        setMessage({isOpen: true, textMessage: 'Ошибка сохранения фильма'});
+      });
+  };
+
+
+  //---------------------------------- Работа с сохраненными фильмами --------------------------------------
+
+  
+  //функция переключения чекбокса сохраненных фильмов
+  function switchShortSavedMovies () {
+    setCheckShorSavedMovies(!checkShortSavedMovies);
+  }
+
+  //получение фильмов пользователя
+  useEffect(() => {
+    if(loggedIn) {
+    getSavedMoviesAPI()
+      .then((res) => {
+        setLoggedIn(true);
+        setSavedMovies(res.data);
+        setNameFilterSavedMovies(res.data);
+        setFoundSavedMovies(res.data);
+      })
+      .catch((err) => {
+        console.log('Ошибка получения фильмов пользователя');
+        setMessage({isOpen: true, textMessage: 'Ошибка получения фильмов пользователя'});
+      }) // вывод ошибки
+    }
+  }, [loggedIn])
+
+
+  //функция удаления фильма со страницы с сохраненными фильмами
+  function deleteMovie (movieId) {
+    deleteMovieAPI(movieId)
+      .then((res) => 
+      {
+        setSavedMovies(savedMovies.filter((item) => item._id !== movieId));
+        setNameFilterSavedMovies(savedMovies.filter((item) => item._id !== movieId));
+      })
+      .catch((err) => {
+        console.log('Ошибка удаления фильма'); //вывод ошибки
+        setMessage({isOpen: true, textMessage: 'Ошибка удаления фильма'});
+      })
+  }
+
+  //функция поиска среди сохраненных фильмов
+  function findSavedMovie(searchString) {
+    const moviesList = findNameMovie(savedMovies, searchString);
+    setNameFilterSavedMovies(moviesList);
+    if (checkShortSavedMovies) {
+      setFoundSavedMovies(findShortMovies(moviesList));
+    } else {
+      setFoundSavedMovies(moviesList);
+    }
+  }
+
+  //функция обратчик нажатия кнопки Найти на странице сохраненных фильмах
+  function handleQuerySavedMovies (searchString) {
+    setExecFindSavedMovies(true);
+    findSavedMovie(searchString);
+    //setExecFindSavedMovies(false);
+  }
+
   //функция обработчик удаления фильма из сохраненных
   function handleDeleteSavedMovie (movie) {
     deleteMovie(movie._id);
   }
 
-  function handleCardDelete() {
-    console.log('Карточка удалена из сохраненных');
-  }
+  //хук фильтрации фильмов по признаку короткометражки
+  useEffect(() => {
+    if (checkShortSavedMovies) {
+      setExecFindSavedMovies(true);
+      setFoundSavedMovies(findShortMovies(nameFilterSavedMovies));
+    } else {
+      setExecFindSavedMovies(true);
+      setFoundSavedMovies(nameFilterSavedMovies)
+    };
+    return() => {
+      setExecFindSavedMovies(false);
+    }
+  }, [checkShortSavedMovies]);
 
+  useEffect(() => {
+    setNameFilterSavedMovies(savedMovies);
+  }, [execFindSavedMovies]);
 
   return (
     <CurrentUserContext.Provider value={currentUser}>
@@ -279,13 +354,23 @@ function App() {
             <Route path='/saved-movies' element={<Header isLoggedIn={loggedIn} />} />
           </Routes>
           <Routes>
-              <Route element={loggedIn ? <Navigate to='/' replace='true' /> : <Navigate to='/signin' replace='true' />} />
-              <Route path='/signin' element={<Login handleLogin={handleLogin} />} />
-              <Route path='/signup' element={<Register handleRegister={handleRegister} />} />
-              <Route path='/' element={<Main isLoggedIn={loggedIn} />} />
-              <Route path='/profile' element={<Profile handleUpdateUser={handleUpdateUser} handleOut={signOut} />} />
+          {console.log('Загрузка компонентов. Стейт: ' + loggedIn)}
+              <Route element={loggedIn ? <Navigate to='/' replace='true' /> :  <Navigate to='/signin' replace='true' />} />
+              <Route path='/signin' element={<Login handleLogin={handleLogin} loggedIn={loggedIn} />} />
+              <Route path='/signup' element={<Register handleRegister={handleRegister} loggedIn={loggedIn} />} />
+              <Route path='/' element={<Main />} />
+              <Route path='/profile' element={
+                <ProtectedRoute
+                  element={Profile}
+                  loggedIn={loggedIn}
+                  handleUpdateUser={handleUpdateUser}
+                  handleOut={signOut}
+                />}
+              />
               <Route path='/movies' element={
-                <Movies 
+                <ProtectedRoute
+                  element={Movies}
+                  loggedIn={loggedIn}
                   handleQueryMovies={handleQueryMovies}
                   handleSwitchShortMovie={switchShortMovie}
                   handleActionMovie={handleActionMovie}
@@ -298,15 +383,28 @@ function App() {
                   isExecFind={execFind}
                 />}
               />
-              <Route path='/saved-movies' element={<SavedMovies movies={savedMovies} handleDeleteSavedMovie={handleDeleteSavedMovie} />} />
-              <Route path='*' element={ <PageNotFound />} />
+              <Route path='/saved-movies' element={
+                <ProtectedRoute
+                  element={SavedMovies}
+                  loggedIn={loggedIn}
+                  movies={foundSavedMovies}
+                  savedMovies={savedMovies}
+                  handleQuerySavedMovies={handleQuerySavedMovies}
+                  handleDeleteSavedMovie={handleDeleteSavedMovie} 
+                  switchShortSavedMovies={switchShortSavedMovies}
+                  checkShortSavedMovies={checkShortSavedMovies}
+                  execFindSavedMovies={execFindSavedMovies}
+                  setExecFindSavedMovies={setExecFindSavedMovies}
+                />}
+              />
+            <Route path="*" element={<PageNotFound />} />
           </Routes>
           <Routes>
             <Route path='/' element={<Footer />} />
             <Route path='/movies' element={<Footer />} />
             <Route path='/saved-movies' element={<Footer />} />
           </Routes>
-                
+          <PopupMessage msg={msg} setMessage={setMessage} />
         </div>
       </div>
     </CurrentUserContext.Provider>

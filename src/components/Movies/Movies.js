@@ -1,6 +1,6 @@
 // Movies — компонент страницы с поиском по фильмам
 
-import { useState, useEffect, Component } from "react"
+import { useState, useEffect } from "react"
 
 import './Movies.css';
 
@@ -25,6 +25,7 @@ const Movies = ({ handleQueryMovies, handleSwitchShortMovie, handleActionMovie, 
   const [addCards, setAddCards] = useState(0); //стейт с количеством карточек, которые добавляются после нажатия на кнопку "Еще"
   const [initialMovies, setInitialMovies] =useState([]); //стейт инициализирующий массив
   const [isEndMovies, setIsEndMovies] = useState(false); //стейт конца основного массива mmovies
+  const [searchStringLocalStorage, setSearchStringLocalStorage] = useState('');
 
   //хук устанавливает значение инициализирующего массива и количество добавляемых карточек в зависимости от размера окна
   useEffect(() => {
@@ -58,9 +59,15 @@ const Movies = ({ handleQueryMovies, handleSwitchShortMovie, handleActionMovie, 
     }
   }, [initialCards, movies])
 
+  useEffect(() => {
+    if (localStorage.getItem('searchString')) {
+      setSearchStringLocalStorage(localStorage.getItem('searchString'));
+    }
+  },[])
+
   return(
     <main className="movies">
-      <SearchForm handleQueryMovies={handleQueryMovies} handleSwitchShortMovie={handleSwitchShortMovie} checkShortMovie={checkShortMovie} />
+      <SearchForm handleQueryMovies={handleQueryMovies} handleSwitchShortMovie={handleSwitchShortMovie} checkShortMovie={checkShortMovie} searchStringLocalStorage={searchStringLocalStorage} />
       {isLoading 
       ? 
         <Preloader /> 
@@ -74,7 +81,7 @@ const Movies = ({ handleQueryMovies, handleSwitchShortMovie, handleActionMovie, 
           <p className="movies__msg">Фильмы не найдены</p>
           :
           <MoviesCardList handleActionMovie={handleActionMovie} checkSavedMovies={checkSavedMovies} moviesArray={initialMovies} isMoviesPage={true}/> }
-          {/* скрываем кнопку если основной массив пустой или достигнут конец осонввного массива */}
+          {/* скрываем кнопку, если основной массив пустой или достигнут конец осонввного массива */}
       {(isNotFound || isEndMovies) ? '' : <MoreButton handleMoreButton={handleMoreButton} /> } 
     </main>
   )

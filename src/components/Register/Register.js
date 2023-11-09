@@ -6,7 +6,7 @@ import Logo from '../Logo/Logo';
 import './Register.css';
 import useFormWithValidation from '../../hooks/useFormWithValidation';
 
-const Register = ({handleRegister}) => {
+const Register = ({handleRegister, loggedIn}) => {
   const { values, handleChange, errors, isValid, resetForm } = useFormWithValidation();
 
   const handleSubmit = (e) => {

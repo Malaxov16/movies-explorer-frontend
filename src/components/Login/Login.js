@@ -1,14 +1,22 @@
 // Login — компонент страницы авторизации
 
-import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 import Logo from '../Logo/Logo';
 import './Login.css';
 import useFormWithValidation from '../../hooks/useFormWithValidation'
+import { useEffect } from 'react';
 
-const Login = ({handleLogin}) => {
+const Login = ({handleLogin, loggedIn}) => {
   const { values, handleChange, errors, isValid, resetForm } = useFormWithValidation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if(loggedIn) {
+      navigate('/', {replace: true});
+    }
+  })
+  console.log('Загрузка компонента Login. Стейт: ' + loggedIn)
 
   const handleSubmit = (e) => {
     e.preventDefault();

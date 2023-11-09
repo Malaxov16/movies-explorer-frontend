@@ -3,14 +3,9 @@ import { useEffect, useState } from 'react';
 import './SearchForm.css'
 import FilterCheckBox from '../FilterCheckbox/FilterCheckBox';
 
-const SearchForm = ({ handleQueryMovies, handleSwitchShortMovie, checkShortMovie, onSubmit, onSwitch }) => {
+const SearchForm = ({ handleQueryMovies, handleSwitchShortMovie, checkShortMovie, searchStringLocalStorage, onSubmit, onSwitch }) => {
   const [searchString, setSearchString] = useState('');
 
-  useEffect(() => {
-    if (localStorage.getItem('searchString')) {
-      setSearchString(localStorage.getItem('searchString'));
-    }
-  },[])
 
   function handleChangeSearch(e) {
     setSearchString(e.target.value);
@@ -20,6 +15,10 @@ const SearchForm = ({ handleQueryMovies, handleSwitchShortMovie, checkShortMovie
     e.preventDefault();
     handleQueryMovies(searchString);
   }
+
+  useEffect(() => {
+    setSearchString(searchStringLocalStorage)
+  }, [searchStringLocalStorage]);
   
   return(
     <section className='search'>
