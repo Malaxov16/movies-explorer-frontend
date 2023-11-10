@@ -109,7 +109,11 @@ function App() {
       })
       .catch((err) => {
         console.log(`Ошибка регистрации: ${err}`); //вывод ошибки
-        setMessage({isOpen: true, textMessage: 'Ошибка регистрации'});
+        let textMessage;
+        if (err === 409) {
+          textMessage ='Ошибка. Пользователь с таким email уже существует'
+        } else {textMessage ='Ошибка обновления данных пользователя'}
+        setMessage({isOpen: true, textMessage: textMessage});
       })
   };
 
@@ -137,6 +141,12 @@ function App() {
     localStorage.removeItem('checkShortMovie');
     localStorage.removeItem('foundMovies');
     setLoggedIn(false);
+    setAllMovies([]);
+    setNameFilterMovies([]);
+    setCheckShortMovie(false);
+    setFoundMovies([]);
+    setFoundSavedMovies([]);
+    setExecFind(false);
     navigate('/signin', {replace: true});
   }
 
