@@ -6,18 +6,18 @@ import MoviesCardList from "../MoviesCardList/MoviesCardList";
 import { useEffect, useState } from 'react';
 
 
-const SavedMovies = ({ movies, savedMovies, handleQuerySavedMovies, handleDeleteSavedMovie, switchShortSavedMovies, checkShortSavedMovies, execFindSavedMovies, setExecFindSavedMovies }) => {
+const SavedMovies = ({ foundMovies, savedMovies, handleQuerySavedMovies, handleDeleteSavedMovie, switchShortSavedMovies, checkShortSavedMovies, execFindSavedMovies, setExecFindSavedMovies, setCheckShorSavedMovies }) => {
   const [notFound, setNotFound] = useState(false);
   const [initialMovies, setInitialMovies] = useState([]);
 
   //проверка отфильтрованного массива на наличие фильмов
   useEffect(() => {
-    if (movies.length !== 0) {
+    if (foundMovies.length !== 0) {
       setNotFound(false);
     } else {
       setNotFound(true);
     }
-  }, [movies]);
+  }, [foundMovies]);
 
   //хук сбрасывает стейт признака выполнения поиска, если страница прогружается не из-за выполнения поиска
   useEffect(() => {
@@ -29,15 +29,15 @@ const SavedMovies = ({ movies, savedMovies, handleQuerySavedMovies, handleDelete
     setNotFound(false);
   }, [])
 
-  //при поступлении отфильтрованного массива или массива с сохраненными фильмами, проверяет в результате чего прогружается страница,
+  //при поступлении отфильтрованного массива или массива с сохраненными фильмами, проверяет в результате чего прогружается страница и в зависимости от причины формирует инициализирующий массив
  
   useEffect(() => {
     if(execFindSavedMovies) {
-      setInitialMovies(movies);
+      setInitialMovies(foundMovies);
     } else {
       setInitialMovies(savedMovies);
     }
-  },[movies, savedMovies, execFindSavedMovies])
+  },[foundMovies, savedMovies, execFindSavedMovies])
 
 
 

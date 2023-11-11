@@ -18,6 +18,7 @@ import { useEffect, useState } from 'react';
 import { CurrentUserContext } from '../../constexts/currentUserContext';
 import { getUser, login, register, updateUser, getSavedMoviesAPI, saveMovieAPI, deleteMovieAPI } from '../../utils/MainApi';
 import { getMoviesMain } from '../../utils/MoviesApi';
+import { durationShortMovie } from '../../utils/consts';
 
 function App() {
   //стейт для работы с пользователем
@@ -50,9 +51,9 @@ function App() {
   // ------------------------------------------- Функции для работы с пользователем---------------------------
 
   //устанавливает стейт в true, если пользователь авторизован
-  function setLogin() {
-    setLoggedIn(true);
-  };
+  // function setLogin() {
+  //   setLoggedIn(true);
+  // };
 
   //проверка авторизации пользователя при запуске приложения
   useEffect(() => {
@@ -66,6 +67,7 @@ function App() {
         .catch((err) => {
           console.log('Ошибка проверки акторизации');
           setMessage({isOpen: true, textMessage: 'Ошибка проверки акторизации'});
+          setLoggedIn(false);
         }) //вывод ошибки
     }
   }, []);
@@ -88,6 +90,7 @@ function App() {
         } else {
           console.log('Ошибка получения токена.') //вывод ошибки
           setMessage({isOpen: true, textMessage: 'Ошибка получения токена'});
+          setLoggedIn(false);
         }
       })
       .catch((res) => {
@@ -147,6 +150,7 @@ function App() {
     setFoundMovies([]);
     setFoundSavedMovies([]);
     setExecFind(false);
+    setSearchStringSavedMovies('');
     navigate('/signin', {replace: true});
   }
 
@@ -165,7 +169,7 @@ function App() {
 
   //функция фильтрации по признаку короткометражный
   function findShortMovies(movies) {
-    return movies.filter((movie) => { return movie.duration <= 40 })
+    return movies.filter((movie) => { return movie.duration <= durationShortMovie })
   };
 
   //------------------------------------- функции для работы на странице Фильмы --------------------------------------------
@@ -271,6 +275,7 @@ function App() {
 
   //---------------------------------- Работа с сохраненными фильмами --------------------------------------
 
+  const [searchStringSavedMovies, setSearchStringSavedMovies] = useState('');
   
   //функция переключения чекбокса сохраненных фильмов
   function switchShortSavedMovies () {
@@ -282,7 +287,7 @@ function App() {
     if(loggedIn) {
     getSavedMoviesAPI()
       .then((res) => {
-        setLoggedIn(true);
+        //setLoggedIn(true);
         setSavedMovies(res.data);
         setNameFilterSavedMovies(res.data);
         setFoundSavedMovies(res.data);
@@ -301,7 +306,7 @@ function App() {
       .then((res) => 
       {
         setSavedMovies(savedMovies.filter((item) => item._id !== movieId));
-        setNameFilterSavedMovies(savedMovies.filter((item) => item._id !== movieId));
+        setNameFilterSavedMovies(nameFilterSavedMovies.filter((item) => item._id !== movieId));
       })
       .catch((err) => {
         console.log('Ошибка удаления фильма'); //вывод ошибки
@@ -311,6 +316,7 @@ function App() {
 
   //функция поиска среди сохраненных фильмов
   function findSavedMovie(searchString) {
+    setSearchStringSavedMovies(searchString);
     const moviesList = findNameMovie(savedMovies, searchString);
     setNameFilterSavedMovies(moviesList);
     if (checkShortSavedMovies) {
@@ -334,17 +340,26 @@ function App() {
 
   //хук фильтрации фильмов по признаку короткометражки
   useEffect(() => {
+    const moviesList = findNameMovie(savedMovies, searchStringSavedMovies);
+    setNameFilterSavedMovies(moviesList);
     if (checkShortSavedMovies) {
       setExecFindSavedMovies(true);
-      setFoundSavedMovies(findShortMovies(nameFilterSavedMovies));
+      setFoundSavedMovies(findShortMovies(moviesList));
     } else {
       setExecFindSavedMovies(true);
-      setFoundSavedMovies(nameFilterSavedMovies)
+      setFoundSavedMovies(moviesList);
     };
-    return() => {
-      setExecFindSavedMovies(false);
-    }
   }, [checkShortSavedMovies]);
+
+  useEffect(() => {
+    const moviesList = findNameMovie(savedMovies, searchStringSavedMovies);
+    setNameFilterSavedMovies(moviesList);
+    if (checkShortSavedMovies) {
+      setFoundSavedMovies(findShortMovies(moviesList));
+    } else {
+      setFoundSavedMovies(moviesList);
+    }
+  }, [savedMovies]);
 
   useEffect(() => {
     setNameFilterSavedMovies(savedMovies);
@@ -361,7 +376,7 @@ function App() {
             <Route path='/saved-movies' element={<Header isLoggedIn={loggedIn} />} />
           </Routes>
           <Routes>
-              <Route element={loggedIn ? <Navigate to='/' replace='true' /> :  <Navigate to='/signin' replace='true' />} />
+              {/* <Route element={loggedIn ? <Navigate to='/' replace='true' /> :  <Navigate to='/signin' replace='true' />} /> */}
               <Route path='/signin' element={<Login handleLogin={handleLogin} loggedIn={loggedIn} />} />
               <Route path='/signup' element={<Register handleRegister={handleRegister} loggedIn={loggedIn} />} />
               <Route path='/' element={<Main />} />
@@ -393,7 +408,7 @@ function App() {
                 <ProtectedRoute
                   element={SavedMovies}
                   loggedIn={loggedIn}
-                  movies={foundSavedMovies}
+                  foundMovies={foundSavedMovies}
                   savedMovies={savedMovies}
                   handleQuerySavedMovies={handleQuerySavedMovies}
                   handleDeleteSavedMovie={handleDeleteSavedMovie} 
@@ -401,6 +416,7 @@ function App() {
                   checkShortSavedMovies={checkShortSavedMovies}
                   execFindSavedMovies={execFindSavedMovies}
                   setExecFindSavedMovies={setExecFindSavedMovies}
+                  setCheckShorSavedMovies={setCheckShorSavedMovies}
                 />}
               />
             <Route path="*" element={<PageNotFound />} />

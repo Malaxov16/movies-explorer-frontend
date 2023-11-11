@@ -1,18 +1,21 @@
 // register — компонент страницы авторизации
 
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
 
 import Logo from '../Logo/Logo';
 import './Register.css';
 import useFormWithValidation from '../../hooks/useFormWithValidation';
 
 const Register = ({handleRegister, loggedIn}) => {
-  const { values, handleChange, errors, isValid, resetForm } = useFormWithValidation();
+  const { values, handleChange, errors, isValid } = useFormWithValidation();
+  const [formBlock, setFormBlock] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setFormBlock(true);
     handleRegister(values.name, values.email, values.password);
-    resetForm();
+    setFormBlock(false);
   };
 
   return(
@@ -20,7 +23,7 @@ const Register = ({handleRegister, loggedIn}) => {
       <div className='register__component'>
         <Logo />
         <h1 className="register__title">Добро пожаловать!</h1>
-        <form className="register__form" onSubmit={handleSubmit}>
+        <form className="register__form" onSubmit={handleSubmit} disabled={formBlock ? 'true' : 'false'}>
           <label className="register__label">Имя</label>
           <input type="text" id="name" name='name' value={values.name || ''} className="register__field" minLength={2} maxLength={30} pattern='([А-Яа-яёA-Za-z \-]+)' required onChange={handleChange}/>
           <span className='register__field-error-msg'>{errors.name}</span>

@@ -9,6 +9,7 @@ const PageNotFound = () => {
 
   const handleBack = () => {
     if (window.history.length > 1) {
+      console.log('Назад')
       navigate(-1);
     } else {
       navigate('/');

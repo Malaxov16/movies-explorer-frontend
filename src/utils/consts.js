@@ -3,6 +3,8 @@ export const urlBase ='https://api.movies-project.nomoredomainsrocks.ru';
 
 export const urlMovies = 'https://api.nomoreparties.co';
 
+export const durationShortMovie = 40; //максимальная продолжительность короткометражного фильма в мин.
+
 //контролькны значения ширины экрана
 export const WINDOW_WIDTH_1280 = 1280;
 export const WINDOW_WIDTH_1150 = 1150;

@@ -42,7 +42,7 @@ const Movies = ({ handleQueryMovies, handleSwitchShortMovie, handleActionMovie, 
       setInitialCards(INITIAL_CARDS_650);
       setAddCards(ADD_CARDS_650);
     };
-  }, [windowSize.width])
+  }, [windowSize.width, movies])
 
   //функция увеличения значения инициализирующего массива
   function handleMoreButton () {
