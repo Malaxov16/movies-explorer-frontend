@@ -4,14 +4,20 @@ import MovieCard from "../MovieCard/MovieCard";
 
 import './MoviesCardList.css';
 
-const MoviesCardList = ({moviesArray, onCardClick, onCardSave, isMoviesPage}) => {
-  let isSavedMovie = false;
+const MoviesCardList = ({handleActionMovie, handleDeleteSavedMovie, checkSavedMovies, moviesArray, onCardClick, onCardSave, isMoviesPage}) => {
   return(
     <section className="elements">
       {moviesArray.map((movie) => {
-        if (movie) {isSavedMovie=true};
         return(
-          <MovieCard key={movie.id} onCardClick={onCardClick} onCardSave={onCardSave} movieCard={movie} isMoviesPage={isMoviesPage} isSavedMovie={isSavedMovie}/>
+          <MovieCard 
+            key={isMoviesPage ? movie.id : movie._id}
+            onCardClick={onCardClick}
+            handleActionMovie={handleActionMovie}
+            handleDeleteSavedMovie={handleDeleteSavedMovie}
+            checkSavedMovies={checkSavedMovies}
+            onCardSave={onCardSave}
+            movieCard={movie}
+            isMoviesPage={isMoviesPage}/>
         )
       })}
     </section>

@@ -1,52 +1,57 @@
 // Profile — компонент страницы редактирования профиля
-
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
 import './Profile.css';
+import useFormWithValidation from '../../hooks/useFormWithValidation';
+import { CurrentUserContext } from '../../constexts/currentUserContext';
 
-const Profile = ( {name}) => {
+const Profile = ( {handleUpdateUser, handleOut}) => {
+  const { values, handleChange, errors, isValid, setValues } = useFormWithValidation();
+  const currentUser = React.useContext(CurrentUserContext);
+
   const [isEdit, setIsEdit] = useState(false);
 
-  const hendlerSaveProfile = (e) => {
+  let isBlocked = (!isValid || (currentUser.name === values.name && currentUser.email === values.email));
+
+  useEffect(() => {
+    setValues(currentUser)
+  }, [currentUser, setValues]); 
+
+  const hendleSubmit = (e) => {
     e.preventDefault();
-    console.log('Сохранить изменения профиля');
+    handleUpdateUser(values.name, values.email);
     setIsEdit(false);
+    setValues(currentUser);
   };
 
   function hendlerEditProfile() {
     setIsEdit(true);
-    console.log('Редактировать профиль')
   };
-
-  function hendlerSignOut() {
-    console.log('Выйти')
-  };
-
-  useEffect(() => {
-    setIsEdit(false)
-  }, [])
 
   return(
     <main className="profile">
       <div className='profile__component'>
-        <h1 className="profile__title">Привет, Виктор!</h1>
-        <form className="profile__form" onSubmit={hendlerSaveProfile}>
+        <h1 className="profile__title">Привет, {currentUser.name}!</h1>
+        <form className="profile__form" onSubmit={hendleSubmit}>
           <div className='profile__fields'>
-            <label className='profile__field-label' for="name">Имя</label>
-            <input required name="name" id="name" className="profile__field" disabled/>
+            <label className='profile__field-label'>Имя</label>
+            <input name="name" id="name" value={values.name || ''} className="profile__field" minLength={2} maxLength={30} pattern='([А-Яа-яёA-Za-z \-]+)' required onChange={handleChange} disabled={!isEdit}/>
           </div>
+          <span className='profile__field-error-msg'>{errors.name}</span>
           <div className='profile__fields'>
-            <label className='profile__field-label' for="email">E-mail</label>
-            <input required name="email" id="email" className="profile__field" disabled/>
+            <label className='profile__field-label'>E-mail</label>
+            <input name="email" id="email" value={values.email || ''} className="profile__field" minLength={2} maxLength={30} pattern='(\w+@\w+\.[A-Za-z]+)' required onChange={handleChange} disabled={!isEdit}/>
           </div>
-          <p className='profile__error'>Ошибка</p>
-          {isEdit && (<input type='submit' value='Сохранить' className="profile__save-button"></input>)}
+          <span className='profile__field-error-msg'>{errors.email}</span>
+          <p className='profile__error'></p>
+          {isEdit && (<button type='submit' value='Сохранить' className={`profile__save-button ${isBlocked ? 'profile__save-button_disabled' : ''}`} disabled={isBlocked}>Сохранить</button>)}
         </form>
         {!isEdit && (
           <>
             <button className="profile__edit-button" onClick={hendlerEditProfile}>Редактировать</button>
-            <Link to="/" className="profile__out-link" onClick={hendlerSignOut}>Выйти</Link>
+            <Link to="/" className="profile__out-link" onClick={handleOut}>Выйти</Link>
           </>
         )}
       </div>

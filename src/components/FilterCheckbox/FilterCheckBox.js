@@ -5,10 +5,10 @@ import { useState } from "react";
 
 import './FilterCheckBox.css';
 
-const FilterCheckBox = ({onChangeHendler, onCheck}) => {
+const FilterCheckBox = ({handleSwitchSortMovie, checkShortMovie}) => {
   return (
     <div className="switcher">
-      <input type="checkbox" className="switcher__input" name="checkbox" onChange={onChangeHendler}></input>
+      <input type="checkbox" className="switcher__input" name="checkbox" onChange={handleSwitchSortMovie} checked={checkShortMovie}></input>
       <label className="switcher__name">Короткометражки</label>
     </div>
   )

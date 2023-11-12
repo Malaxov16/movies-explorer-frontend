@@ -5,6 +5,11 @@
   padding: 0;
 }
 
+.card__trailer-link {
+  margin: 0;
+  padding: 0;
+}
+
 .card__image {
   margin: 0;
   padding: 0;
